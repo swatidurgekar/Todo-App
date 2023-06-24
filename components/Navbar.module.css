@@ -1,0 +1,12 @@
+.navbar {
+  background-color: orange;
+  height: 35px;
+  padding: 5px;
+  align-items: center;
+  display: flex;
+  gap: 20%;
+}
+.link {
+  color: white;
+  text-decoration: none;
+}
