@@ -16,6 +16,9 @@ const todoSlice = createSlice({
       const index = action.payload;
       state.todos.splice(index, 1);
     },
+    setTodo(state, action) {
+      state.todos = action.payload;
+    },
   },
 });
 

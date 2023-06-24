@@ -9,7 +9,7 @@ const Todo = (props) => {
   const submitHandler = (event) => {
     event.preventDefault();
     const enteredtaskName = taskName.current.value;
-    props.addTodo({ id: Math.random(), name: enteredtaskName });
+    props.addTodo({ name: enteredtaskName });
     setAddTodo(false);
   };
 

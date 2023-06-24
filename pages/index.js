@@ -1,15 +1,30 @@
 import NavbarComponent from "@/components/Navbar";
 import Todo from "@/components/todo";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { todoActions } from "@/components/Store";
 import { useDispatch, useSelector } from "react-redux";
+import { MongoClient } from "mongodb";
 
 export default function Home(props) {
-  const todos = useSelector((state) => state.todo.todos);
   const dispatch = useDispatch();
 
-  function addTodo(todo) {
+  useEffect(() => {
+    dispatch(todoActions.setTodo(props.todos));
+  }, []);
+
+  const todos = useSelector((state) => state.todo.todos);
+
+  async function addTodo(todo) {
     dispatch(todoActions.addTodo(todo));
+    const response = await fetch("/api/new-task", {
+      method: "POST",
+      body: JSON.stringify(todo),
+      headers: {
+        "Content-type": "application/json",
+      },
+    });
+    const data = await response.json();
+    console.log(data);
   }
 
   function completedTodo(id) {
@@ -38,4 +53,23 @@ export default function Home(props) {
       />
     </Fragment>
   );
+}
+
+export async function getStaticProps() {
+  const client = await MongoClient.connect(
+    "mongodb+srv://swati:swati4s@cluster0.or8j6ek.mongodb.net/todos"
+  );
+  const db = client.db();
+  const todosColeection = db.collection("todos");
+  const todos = await todosColeection.find().toArray();
+  client.close();
+  return {
+    props: {
+      todos: todos.map((todo) => ({
+        name: todo.name,
+        id: todo._id.toString(),
+      })),
+    },
+    revalidate: 1,
+  };
 }
