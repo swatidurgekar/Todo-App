@@ -54,7 +54,6 @@ export default function Home(props) {
   async function deleteTodo(id) {
     const updatedTodos = [...todos];
     const completedTodoObject = updatedTodos.find((todo) => todo.id === id);
-    dispatch(todoActions.setDeleteName(completedTodoObject.name));
     const index = updatedTodos.indexOf(completedTodoObject);
     dispatch(todoActions.updateTodo(index));
     await fetch(`/api/${id}`, {

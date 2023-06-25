@@ -22,9 +22,6 @@ const todoSlice = createSlice({
     setCompletedTodo(state, action) {
       state.completedTodo = action.payload;
     },
-    setDeleteName(state, action) {
-      state.deteleName = action.payload;
-    },
   },
 });
 
