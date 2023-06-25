@@ -9,7 +9,7 @@ const Todo = (props) => {
   const submitHandler = (event) => {
     event.preventDefault();
     const enteredtaskName = taskName.current.value;
-    props.addTodo({ name: enteredtaskName });
+    props.addTodo({ name: enteredtaskName, status: "incomplete" });
     setAddTodo(false);
   };
 
