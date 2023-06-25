@@ -9,7 +9,13 @@ export default function Home(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(todoActions.setTodo(props.todos));
+    const todos = [];
+    props.todos.map((todo) => {
+      if (todo.status === "incomplete") {
+        todos.push(todo);
+      }
+    });
+    dispatch(todoActions.setTodo(todos));
   }, []);
 
   const todos = useSelector((state) => state.todo.todos);
@@ -27,12 +33,21 @@ export default function Home(props) {
     console.log(data);
   }
 
-  function completedTodo(id) {
+  async function completedTodo(id) {
     const updatedTodos = [...todos];
     const completedTodoObject = updatedTodos.find((todo) => todo.id === id);
     dispatch(todoActions.addCompletedTodo(completedTodoObject));
     const index = updatedTodos.indexOf(completedTodoObject);
     dispatch(todoActions.updateTodo(index));
+    const response = await fetch(`/api/update-status`, {
+      method: "PUT",
+      body: JSON.stringify({
+        name: completedTodoObject.name,
+      }),
+      headers: {
+        "Content-type": "application/json",
+      },
+    });
   }
 
   function deleteTodo(id) {
@@ -68,6 +83,7 @@ export async function getStaticProps() {
       todos: todos.map((todo) => ({
         name: todo.name,
         id: todo._id.toString(),
+        status: todo.status,
       })),
     },
     revalidate: 1,
