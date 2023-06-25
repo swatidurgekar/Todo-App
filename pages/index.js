@@ -39,6 +39,7 @@ export default function Home(props) {
     dispatch(todoActions.addCompletedTodo(completedTodoObject));
     const index = updatedTodos.indexOf(completedTodoObject);
     dispatch(todoActions.updateTodo(index));
+    console.log(completedTodoObject.name);
     const response = await fetch(`/api/update-status`, {
       method: "PUT",
       body: JSON.stringify({
@@ -50,11 +51,15 @@ export default function Home(props) {
     });
   }
 
-  function deleteTodo(id) {
+  async function deleteTodo(id) {
     const updatedTodos = [...todos];
     const completedTodoObject = updatedTodos.find((todo) => todo.id === id);
+    dispatch(todoActions.setDeleteName(completedTodoObject.name));
     const index = updatedTodos.indexOf(completedTodoObject);
     dispatch(todoActions.updateTodo(index));
+    await fetch(`/api/${id}`, {
+      method: "DELETE",
+    });
   }
 
   return (
@@ -77,14 +82,15 @@ export async function getStaticProps() {
   const db = client.db();
   const todosColeection = db.collection("todos");
   const todos = await todosColeection.find().toArray();
+  const todosArray = todos.map((todo) => ({
+    name: todo.name,
+    id: todo.id,
+    status: todo.status,
+  }));
   client.close();
   return {
     props: {
-      todos: todos.map((todo) => ({
-        name: todo.name,
-        id: todo._id.toString(),
-        status: todo.status,
-      })),
+      todos: todosArray,
     },
     revalidate: 1,
   };

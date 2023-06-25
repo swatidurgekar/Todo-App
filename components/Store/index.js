@@ -1,6 +1,6 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
-const todoState = { todos: [], completedTodo: [] };
+const todoState = { todos: [], completedTodo: [], deteleName: "" };
 
 const todoSlice = createSlice({
   name: "todo",
@@ -18,6 +18,12 @@ const todoSlice = createSlice({
     },
     setTodo(state, action) {
       state.todos = action.payload;
+    },
+    setCompletedTodo(state, action) {
+      state.completedTodo = action.payload;
+    },
+    setDeleteName(state, action) {
+      state.deteleName = action.payload;
     },
   },
 });
