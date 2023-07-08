@@ -9,6 +9,7 @@ export default function Home(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log(props.todos);
     const todos = [];
     props.todos.map((todo) => {
       if (todo.status === "incomplete") {
