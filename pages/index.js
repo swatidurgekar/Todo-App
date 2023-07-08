@@ -1,9 +1,32 @@
 import NavbarComponent from "@/components/Navbar";
 import Todo from "@/components/todo";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect } from "react";
 import { todoActions } from "@/components/Store";
 import { useDispatch, useSelector } from "react-redux";
 import { MongoClient } from "mongodb";
+
+export async function getStaticProps() {
+  console.log("running get method");
+  const client = await MongoClient.connect(
+    "mongodb+srv://swati:swati4s@cluster0.or8j6ek.mongodb.net/todos"
+  );
+  const db = client.db();
+  const todosColeection = db.collection("todos");
+  const todos = await todosColeection.find().toArray();
+  console.log(todos);
+  const todosArray = todos.map((todo) => ({
+    name: todo.name,
+    id: todo.id,
+    status: todo.status,
+  }));
+  client.close();
+  return {
+    props: {
+      todos: todosArray,
+    },
+    revalidate: 1,
+  };
+}
 
 export default function Home(props) {
   const dispatch = useDispatch();
@@ -73,25 +96,4 @@ export default function Home(props) {
       />
     </Fragment>
   );
-}
-
-export async function getStaticProps() {
-  const client = await MongoClient.connect(
-    "mongodb+srv://swati:swati4s@cluster0.or8j6ek.mongodb.net/todos"
-  );
-  const db = client.db();
-  const todosColeection = db.collection("todos");
-  const todos = await todosColeection.find().toArray();
-  const todosArray = todos.map((todo) => ({
-    name: todo.name,
-    id: todo.id,
-    status: todo.status,
-  }));
-  client.close();
-  return {
-    props: {
-      todos: todosArray,
-    },
-    revalidate: 1,
-  };
 }

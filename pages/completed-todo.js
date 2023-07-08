@@ -41,6 +41,7 @@ export async function getStaticProps() {
     props: {
       completedTodos: completedTodo,
     },
+    revalidate: 1,
   };
 }
 
