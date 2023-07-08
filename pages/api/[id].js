@@ -1,5 +1,4 @@
 import { MongoClient } from "mongodb";
-import { ObjectId } from "mongodb";
 
 async function handler(req, res) {
   if (req.method === "DELETE") {
