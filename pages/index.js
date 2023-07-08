@@ -24,7 +24,7 @@ export async function getStaticProps() {
     props: {
       todos: todosArray,
     },
-    revalidate: 0.1,
+    revalidate: 1,
   };
 }
 
