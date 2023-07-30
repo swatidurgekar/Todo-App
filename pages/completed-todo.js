@@ -31,6 +31,7 @@ export async function getStaticProps() {
   const db = client.db();
   const todoCollection = db.collection("todos");
   const result = await todoCollection.find().toArray();
+  client.close();
   const todoArray = result.map((todo) => ({
     id: todo.id,
     name: todo.name,

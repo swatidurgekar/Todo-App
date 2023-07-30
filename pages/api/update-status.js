@@ -9,7 +9,7 @@ async function handler(req, res) {
     const db = client.db();
     const todosCollection = db.collection("todos");
     const result = await todosCollection.updateOne(
-      { name: data.name },
+      { id: data.id },
       { $set: { status: "complete" } }
     );
     console.log(result);

@@ -5,41 +5,11 @@ import { todoActions } from "@/components/Store";
 import { useDispatch, useSelector } from "react-redux";
 import { MongoClient } from "mongodb";
 
-export async function getStaticProps() {
-  console.log("running get method");
-  const client = await MongoClient.connect(
-    "mongodb+srv://swati:swati4s@cluster0.or8j6ek.mongodb.net/todos"
-  );
-  const db = client.db();
-  const todosColeection = db.collection("todos");
-  const todos = await todosColeection.find().toArray();
-  console.log(todos);
-  const todosArray = todos.map((todo) => ({
-    name: todo.name,
-    id: todo.id,
-    status: todo.status,
-  }));
-  client.close();
-  return {
-    props: {
-      todos: todosArray,
-    },
-    revalidate: 1,
-  };
-}
-
 export default function Home(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(props.todos);
-    const todos = [];
-    props.todos.map((todo) => {
-      if (todo.status === "incomplete") {
-        todos.push(todo);
-      }
-    });
-    dispatch(todoActions.setTodo(todos));
+    dispatch(todoActions.setTodo(props.todos));
   }, []);
 
   const todos = useSelector((state) => state.todo.todos);
@@ -60,14 +30,14 @@ export default function Home(props) {
   async function completedTodo(id) {
     const updatedTodos = [...todos];
     const completedTodoObject = updatedTodos.find((todo) => todo.id === id);
-    dispatch(todoActions.addCompletedTodo(completedTodoObject));
+    // dispatch(todoActions.addCompletedTodo(completedTodoObject));
     const index = updatedTodos.indexOf(completedTodoObject);
     dispatch(todoActions.updateTodo(index));
-    console.log(completedTodoObject.name);
+    console.log(completedTodoObject.id);
     const response = await fetch(`/api/update-status`, {
       method: "PUT",
       body: JSON.stringify({
-        name: completedTodoObject.name,
+        id: completedTodoObject.id,
       }),
       headers: {
         "Content-type": "application/json",
@@ -96,4 +66,31 @@ export default function Home(props) {
       />
     </Fragment>
   );
+}
+
+export async function getStaticProps() {
+  console.log("running get method");
+  const client = await MongoClient.connect(
+    "mongodb+srv://swati:swati4s@cluster0.or8j6ek.mongodb.net/todos"
+  );
+  const db = client.db();
+  const todosColeection = db.collection("todos");
+  const todos = await todosColeection.find().toArray();
+  client.close();
+  console.log(todos);
+  const todosArray = todos.map((todo) => ({
+    name: todo.name,
+    id: todo.id,
+    status: todo.status,
+  }));
+  const incompleteTodos = todosArray.filter(
+    (todo) => todo.status === "incomplete"
+  );
+
+  return {
+    props: {
+      todos: incompleteTodos,
+    },
+    revalidate: 1,
+  };
 }

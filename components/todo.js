@@ -4,6 +4,7 @@ import classes from "./todo.module.css";
 
 const Todo = (props) => {
   const [addTodo, setAddTodo] = useState(false);
+  const [checked, setChecked] = useState(false);
   const taskName = useRef();
 
   const submitHandler = (event) => {
@@ -18,7 +19,10 @@ const Todo = (props) => {
   };
 
   const completedTodo = (id) => {
-    props.completedTodo(id);
+    setChecked(true);
+    setTimeout(() => {
+      props.completedTodo(id);
+    }, 500);
   };
 
   const deleteTodo = (id) => {
@@ -32,7 +36,11 @@ const Todo = (props) => {
         {props.todos.map((todo) => {
           return (
             <div key={todo.id}>
-              <input type="checkbox" onClick={() => completedTodo(todo.id)} />
+              <input
+                checked={checked}
+                type="checkbox"
+                onClick={() => completedTodo(todo.id)}
+              />
               <span>{todo.name}</span>
               <button onClick={() => deleteTodo(todo.id)}>DELETE</button>
             </div>
