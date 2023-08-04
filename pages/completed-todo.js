@@ -1,13 +1,15 @@
 import NavbarComponent from "@/components/Navbar";
 import { todoActions } from "@/components/Store";
 import { MongoClient } from "mongodb";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const CompleteTodo = (props) => {
   const dispatch = useDispatch();
+  const loading = useSelector((state) => state.todo.loading);
 
   useEffect(() => {
+    dispatch(todoActions.setLoading(false));
     dispatch(todoActions.setCompletedTodo(props.completedTodos));
   }, []);
 
@@ -16,10 +18,14 @@ const CompleteTodo = (props) => {
   return (
     <Fragment>
       <NavbarComponent />
-      <h1>COMPLETED TODOS</h1>
-      {completedTodos.map((completedTodo) => {
-        return <li key={completedTodo.id}>{completedTodo.name}</li>;
-      })}
+      {!loading && (
+        <div>
+          <h1>COMPLETED TODOS</h1>
+          {completedTodos.map((completedTodo) => {
+            return <li key={completedTodo.id}>{completedTodo.name}</li>;
+          })}
+        </div>
+      )}
     </Fragment>
   );
 };

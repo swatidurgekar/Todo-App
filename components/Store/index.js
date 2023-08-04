@@ -1,6 +1,11 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
-const todoState = { todos: [], completedTodo: [], deteleName: "" };
+const todoState = {
+  todos: [],
+  completedTodo: [],
+  deteleName: "",
+  loading: true,
+};
 
 const todoSlice = createSlice({
   name: "todo",
@@ -21,6 +26,9 @@ const todoSlice = createSlice({
     },
     setCompletedTodo(state, action) {
       state.completedTodo = action.payload;
+    },
+    setLoading(state, action) {
+      state.loading = action.payload;
     },
   },
 });

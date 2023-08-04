@@ -1,14 +1,16 @@
 import NavbarComponent from "@/components/Navbar";
 import Todo from "@/components/todo";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { todoActions } from "@/components/Store";
 import { useDispatch, useSelector } from "react-redux";
 import { MongoClient } from "mongodb";
 
 export default function Home(props) {
   const dispatch = useDispatch();
+  const loading = useSelector((state) => state.todo.loading);
 
   useEffect(() => {
+    dispatch(todoActions.setLoading(false));
     dispatch(todoActions.setTodo(props.todos));
   }, []);
 
@@ -24,7 +26,6 @@ export default function Home(props) {
       },
     });
     const data = await response.json();
-    console.log(data);
   }
 
   async function completedTodo(id) {
@@ -33,7 +34,6 @@ export default function Home(props) {
     // dispatch(todoActions.addCompletedTodo(completedTodoObject));
     const index = updatedTodos.indexOf(completedTodoObject);
     dispatch(todoActions.updateTodo(index));
-    console.log(completedTodoObject.id);
     const response = await fetch(`/api/update-status`, {
       method: "PUT",
       body: JSON.stringify({
@@ -58,18 +58,19 @@ export default function Home(props) {
   return (
     <Fragment>
       <NavbarComponent />
-      <Todo
-        todos={todos}
-        addTodo={addTodo}
-        completedTodo={completedTodo}
-        deleteTodo={deleteTodo}
-      />
+      {!loading && (
+        <Todo
+          todos={todos}
+          addTodo={addTodo}
+          completedTodo={completedTodo}
+          deleteTodo={deleteTodo}
+        />
+      )}
     </Fragment>
   );
 }
 
 export async function getStaticProps() {
-  console.log("running get method");
   const client = await MongoClient.connect(
     "mongodb+srv://swati:swati4s@cluster0.or8j6ek.mongodb.net/todos"
   );
@@ -77,7 +78,6 @@ export async function getStaticProps() {
   const todosColeection = db.collection("todos");
   const todos = await todosColeection.find().toArray();
   client.close();
-  console.log(todos);
   const todosArray = todos.map((todo) => ({
     name: todo.name,
     id: todo.id,
@@ -86,7 +86,6 @@ export async function getStaticProps() {
   const incompleteTodos = todosArray.filter(
     (todo) => todo.status === "incomplete"
   );
-
   return {
     props: {
       todos: incompleteTodos,

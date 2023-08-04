@@ -9,6 +9,7 @@ const Todo = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
+    setChecked(false);
     const enteredtaskName = taskName.current.value;
     props.addTodo({
       id: Math.random(),
@@ -31,6 +32,11 @@ const Todo = (props) => {
 
   return (
     <div>
+      {props.loading && (
+        <div>
+          <h1>Loading...</h1>
+        </div>
+      )}
       <h1>TODOS</h1>
       <ul>
         {props.todos.map((todo) => {
